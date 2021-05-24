@@ -11,12 +11,17 @@ export function mdsRunFn(functions) {
             .map((s, i) => s + (values[i] !== undefined ? `\${${i}}` : ''))
             .join('');
 
+        const oneVariable = /^\$\{(\d+)\}$/gi.exec(val);
+        if(oneVariable) {
+            return values[parseInt(oneVariable[1])];
+        }
+
         for(let i = 0; i < functions.length; i++) {
             const fn = functions[i];
             for(let alt of fn.alt) {
                 const check = alt.regEx.exec(val);
                 if(check) {
-                    console.info(`"${val}" is interpreted as ${alt.regEx}`);
+                    //console.info(`"${val}" is interpreted as ${alt.regEx}`);
                     const checkSliced = check.slice(1);
                     const args = checkSliced.map(arg => {
                         const oneVariable = /^\$\{(\d+)\}$/gi.exec(arg);

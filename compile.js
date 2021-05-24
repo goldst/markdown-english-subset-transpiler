@@ -36,7 +36,7 @@ function parsePhrase(phrase) {
         return `input_values[${parseInt(complexArg[1].slice(0, -2)) - 1}]`;
     }
 
-    const variable = /^\*(.*?)\*$/gi.exec(phrase);
+    const variable = /^\*([^*]*?)\*$/gi.exec(phrase);
     if(variable) {
         return variable[1].replace(/ /gi, '_');
     }
@@ -108,15 +108,14 @@ outDocument += subsections.map(subsection => {
                     return out;
                 }
                 
-                const complexAltDescription = /^this function is called when someone says "(.*)", where (.*?) is the (\d+..) input value(, (.*?) is the (\d+..) input value)* and (.*?) is the (\d+..) input value$/gi.exec(line);
+                const complexAltDescription = /^this function is called when someone says "(.*)", (where .*? is the \d+.. input value((, .*? is the \d+.. input value)* and .*? is the \d+.. input value))$/gi.exec(line);
                 if(complexAltDescription) {
                     const originalText = complexAltDescription[1];
-                    const replaceFrom = complexAltDescription.filter((_, i) => i % 3 === 2);
-                    const replaceTo = complexAltDescription.filter((_, i) => i % 3 === 0)
-                        .slice(1)
-                        .map(number => parseInt(number.slice(0, -2)) - 1);
+                    const replacements = complexAltDescription[2].split(/(?:,|and)/gi).map(replacement =>
+                        / (.*?) is the (\d+).. input value/gi.exec(replacement).slice(1)
+                    );
 
-                    const replaced = replaceFrom.reduce((text, from, i) => text.replace(from, `\${${replaceTo[i]}}`), originalText);
+                    const replaced = replacements.reduce((text, replacement) => text.replace(replacement[0], `\${${parseInt(replacement[1]) - 1}}`), originalText);
 
                     out += `        mdsAltValue \`${replaced}\`, `;
                     return out;
@@ -147,7 +146,7 @@ if(!main) {
     exit();
 }
 
-main(...(process.argv.slice(2)));
+console.log(main(...(process.argv.slice(2))));
 `;
 
 console.log(outDocument);
