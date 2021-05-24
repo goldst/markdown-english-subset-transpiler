@@ -1,0 +1,15 @@
+{
+  "name": "markdown-english",
+  "version": "1.0.0",
+  "description": "A suite of tools to execute instructions written in a subset of the english language in Markdown",
+  "main": "compile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Leonard Goldstein",
+  "license": "MIT",
+  "type": "module",
+  "devDependencies": {
+    "eslint": "^7.27.0"
+  }
+}
